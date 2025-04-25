@@ -9,12 +9,7 @@ import type { PrismaClient, UserType } from "@quenti/prisma/client";
 export function CustomPrismaAdapter(p: PrismaClient): Adapter {
   return {
     ...PrismaAdapter(p),
-    createUser: async (data) => {
-      if (!data.email) {
-        throw new Error(
-          `Criar usuário falhou: e-mail indefinido. Dados recebidos: ${JSON.stringify(data)}`
-        );
-      }
+    createUser: async (data: { email: string; name?: string | null; image?: string | null }) => {
       const name = data.name;
 
       let uniqueUsername = null;

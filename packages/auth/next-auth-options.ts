@@ -1,10 +1,40 @@
 import { type NextAuthOptions } from "next-auth";
+import { type DefaultSession, type DefaultUser } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import ZitadelProvider from "next-auth/providers/zitadel";
 
 import { env } from "@quenti/env/server";
 import { APP_URL } from "@quenti/lib/constants/url";
 import { prisma } from "@quenti/prisma";
+
+// Extend the default session and user types
+declare module "next-auth" {
+  interface Session extends DefaultSession {
+    user: {
+      id: string;
+      username: string;
+      displayName?: string;
+      type?: string;
+      banned: boolean;
+      flags?: number;
+      completedOnboarding?: boolean;
+      organizationId?: string;
+      isOrgEligible?: boolean;
+    } & DefaultSession["user"];
+    version?: string;
+  }
+
+  interface User extends DefaultUser {
+    username?: string;
+    displayName?: string;
+    type?: string;
+    bannedAt?: Date;
+    flags?: number;
+    completedOnboarding?: boolean;
+    organizationId?: string;
+    isOrgEligible?: boolean;
+  }
+}
 
 import pjson from "../../apps/next/package.json";
 import { sendVerificationRequest } from "./magic-link";
